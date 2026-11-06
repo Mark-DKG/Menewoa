@@ -1,0 +1,36 @@
+# Keeps a FREE-plan Supabase project from being paused for inactivity (7 days) by touching
+# both the database and the Auth API every other day. It does not replace the backup job;
+# the daily dump is activity as well, this is the independent safety net.
+#
+# Repository SECRET:   SUPABASE_DB_URL   (session pooler, same as db-backup)
+# Repository VARIABLES: SUPABASE_URL (https://<ref>.supabase.co), SUPABASE_PUBLISHABLE_KEY
+# (both are public values: they ship in the web bundle).
+name: keepalive
+
+on:
+  schedule:
+    - cron: "41 6 */2 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Database round trip
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          echo "::add-mask::$DATABASE_URL"
+          test "$(psql "$DATABASE_URL" -XAtc 'select count(*) from public.app_settings')" -ge 1
+      - name: Auth API health
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          curl -fsS --retry 3 --max-time 20 \
+            -H "apikey: ${SUPABASE_PUBLISHABLE_KEY}" \
+            "${SUPABASE_URL}/auth/v1/health" > /dev/null

@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Light is the default; [data-theme="dark"] is set by
+   /theme-init.js before first paint (no flash) and by ThemeProvider afterwards.
+   Contrast (WCAG 2.1) of every text/background pair used was checked: body and
+   secondary text >= 4.5:1 in both themes (see docs/ACCESSIBILITY.md).
+   --------------------------------------------------------------------------- */
+:root {
+  --font-display: "Quicksand Variable","Quicksand",ui-rounded,"SF Pro Rounded","Nunito",system-ui,sans-serif;
+  --font-body: "Nunito Variable","Nunito",ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+  color-scheme: light;
+  --c-wine: #7F011F;
+  --c-wine-dark: #5C0016;
+  --c-wine-soft: #A83350;
+  --c-on-wine: #FFFFFF;
+  --c-sand: #F5EBD0;
+  --c-sand-deep: #E9D9AC;
+  --c-white: #FFFFFF;          /* card / surface */
+  --c-page: #FFFCF7;
+  --c-header-bg: rgba(255,252,247,0.9);
+  --c-ink: #2B1912;
+  --c-ink-soft: #6B5A50;
+  --c-line: #EAE0CE;
+  --c-fertile: #4C6A4A;
+  --c-fertile-soft: #E4EBDF;
+  --c-gold: #855C12;
+  --c-gold-soft: #F3E6C8;
+  --c-danger: #9B2C2C;
+  --c-danger-soft: #FBEAEA;
+  --c-input-bg: #FFFEFB;
+  --c-toggle-off: #DDD2C0;
+  --c-track: #E4D6B8;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-wine: #EE8CA3;           /* a light rose: wine reads as the accent on dark surfaces */
+  --c-wine-dark: #F7B9C7;
+  --c-wine-soft: #C65C78;
+  --c-on-wine: #2B0710;
+  --c-sand: #2D201E;
+  --c-sand-deep: #4A3530;
+  --c-white: #231817;
+  --c-page: #17100F;
+  --c-header-bg: rgba(23,16,15,0.9);
+  --c-ink: #F4EBDD;
+  --c-ink-soft: #C4B4A8;
+  --c-line: #3A2A27;
+  --c-fertile: #9CC79A;
+  --c-fertile-soft: #2A3A2A;
+  --c-gold: #E5B863;
+  --c-gold-soft: #3A2E17;
+  --c-danger: #FF9A9A;
+  --c-danger-soft: #3D1A1A;
+  --c-input-bg: #1C1312;
+  --c-toggle-off: #5A4640;
+  --c-track: #4A3833;
+}
+
+html { background-color: var(--c-page); }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--c-page);
+  color: var(--c-ink);
+}
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.005em; }
+::placeholder { color: var(--c-ink-soft); opacity: 0.75; }
+
+/* Brand artwork: the light-on-dark colourway is shown only in dark mode. */
+.brand-img { display: block; }
+.brand-img--dark { display: none; }
+:root[data-theme="dark"] .brand-img--light { display: none; }
+:root[data-theme="dark"] .brand-img--dark { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

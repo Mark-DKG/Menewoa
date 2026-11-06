@@ -1,0 +1,201 @@
+[
+ {
+  "name": "single period uses the user's setting",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2025-03-02"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-03-02",
+   "cycle_length_used": 28,
+   "cycles_used": 0,
+   "variability_days": null,
+   "next_period_start": "2025-03-30",
+   "ovulation_date": "2025-03-16",
+   "fertile_start": "2025-03-11",
+   "fertile_end": "2025-03-17"
+  }
+ },
+ {
+  "name": "single period, 33-day setting",
+  "defaultCycleLength": 33,
+  "starts": [
+   "2025-03-02"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-03-02",
+   "cycle_length_used": 33,
+   "cycles_used": 0,
+   "variability_days": null,
+   "next_period_start": "2025-04-04",
+   "ovulation_date": "2025-03-21",
+   "fertile_start": "2025-03-16",
+   "fertile_end": "2025-03-22"
+  }
+ },
+ {
+  "name": "two periods = one gap = not enough, falls back",
+  "defaultCycleLength": 30,
+  "starts": [
+   "2025-01-10",
+   "2025-02-04"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-02-04",
+   "cycle_length_used": 30,
+   "cycles_used": 0,
+   "variability_days": null,
+   "next_period_start": "2025-03-06",
+   "ovulation_date": "2025-02-20",
+   "fertile_start": "2025-02-15",
+   "fertile_end": "2025-02-21"
+  }
+ },
+ {
+  "name": "three regular 28-day cycles",
+  "defaultCycleLength": 30,
+  "starts": [
+   "2025-01-01",
+   "2025-01-29",
+   "2025-02-26",
+   "2025-03-26"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-03-26",
+   "cycle_length_used": 28,
+   "cycles_used": 3,
+   "variability_days": 0,
+   "next_period_start": "2025-04-23",
+   "ovulation_date": "2025-04-09",
+   "fertile_start": "2025-04-04",
+   "fertile_end": "2025-04-10"
+  }
+ },
+ {
+  "name": "irregular cycles",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2025-01-03",
+   "2025-02-02",
+   "2025-03-09",
+   "2025-04-02",
+   "2025-05-06"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-05-06",
+   "cycle_length_used": 31,
+   "cycles_used": 4,
+   "variability_days": 5,
+   "next_period_start": "2025-06-06",
+   "ovulation_date": "2025-05-23",
+   "fertile_start": "2025-05-18",
+   "fertile_end": "2025-05-24"
+  }
+ },
+ {
+  "name": "implausible gap (70 days) is ignored",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2025-01-01",
+   "2025-03-12",
+   "2025-04-09",
+   "2025-05-08"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-05-08",
+   "cycle_length_used": 29,
+   "cycles_used": 2,
+   "variability_days": 0.7,
+   "next_period_start": "2025-06-06",
+   "ovulation_date": "2025-05-23",
+   "fertile_start": "2025-05-18",
+   "fertile_end": "2025-05-24"
+  }
+ },
+ {
+  "name": "too-short gap (10 days) is ignored",
+  "defaultCycleLength": 29,
+  "starts": [
+   "2025-01-01",
+   "2025-01-11",
+   "2025-02-09",
+   "2025-03-10"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-03-10",
+   "cycle_length_used": 29,
+   "cycles_used": 2,
+   "variability_days": 0,
+   "next_period_start": "2025-04-08",
+   "ovulation_date": "2025-03-25",
+   "fertile_start": "2025-03-20",
+   "fertile_end": "2025-03-26"
+  }
+ },
+ {
+  "name": "only the last 7 periods count",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2024-01-01",
+   "2024-02-10",
+   "2024-03-21",
+   "2024-06-10",
+   "2024-07-06",
+   "2024-08-01",
+   "2024-08-27",
+   "2024-09-22",
+   "2024-10-18",
+   "2024-11-13",
+   "2024-12-09"
+  ],
+  "expected": {
+   "based_on_period_start": "2024-12-09",
+   "cycle_length_used": 26,
+   "cycles_used": 6,
+   "variability_days": 0,
+   "next_period_start": "2025-01-04",
+   "ovulation_date": "2024-12-21",
+   "fertile_start": "2024-12-16",
+   "fertile_end": "2024-12-22"
+  }
+ },
+ {
+  "name": "month and year boundary + leap day",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2023-12-20",
+   "2024-01-17",
+   "2024-02-14",
+   "2024-03-13"
+  ],
+  "expected": {
+   "based_on_period_start": "2024-03-13",
+   "cycle_length_used": 28,
+   "cycles_used": 3,
+   "variability_days": 0,
+   "next_period_start": "2024-04-10",
+   "ovulation_date": "2024-03-27",
+   "fertile_start": "2024-03-22",
+   "fertile_end": "2024-03-28"
+  }
+ },
+ {
+  "name": "unsorted input",
+  "defaultCycleLength": 28,
+  "starts": [
+   "2025-03-01",
+   "2025-01-01",
+   "2025-02-01"
+  ],
+  "expected": {
+   "based_on_period_start": "2025-03-01",
+   "cycle_length_used": 30,
+   "cycles_used": 2,
+   "variability_days": 2.1,
+   "next_period_start": "2025-03-31",
+   "ovulation_date": "2025-03-17",
+   "fertile_start": "2025-03-12",
+   "fertile_end": "2025-03-18"
+  }
+ }
+]

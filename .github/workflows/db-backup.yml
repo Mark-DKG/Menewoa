@@ -1,0 +1,55 @@
+# Daily encrypted logical backup of the Supabase database.
+#
+# Required repository SECRETS (Settings > Secrets and variables > Actions):
+#   SUPABASE_DB_URL        Session-pooler connection string (port 5432), user postgres.<ref>.
+#                          NOT the direct host (IPv6 only on the free plan; GitHub runners
+#                          have no IPv6) and NOT the transaction pooler (port 6543).
+#   BACKUP_AGE_RECIPIENT   age PUBLIC key (age1...). The private key never goes in GitHub.
+#
+# Keep this repository PRIVATE. Artifacts are encrypted, but there is no reason to expose them.
+name: db-backup
+
+on:
+  schedule:
+    - cron: "17 3 * * *"        # 03:17 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+env:
+  PG_MAJOR: "17"                # must be >= the server's major version (Supabase Dashboard > Settings > Infrastructure)
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - name: Install postgresql-client ${{ env.PG_MAJOR }} and age
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends "postgresql-client-${PG_MAJOR}" age
+          echo "/usr/lib/postgresql/${PG_MAJOR}/bin" >> "$GITHUB_PATH"
+      - name: Dump and encrypt
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+          AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+        run: |
+          echo "::add-mask::$DATABASE_URL"
+          pg_dump --version
+          scripts/backup.sh out
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: menewoa-db-backup
+          path: out/*.tar.age
+          retention-days: 30          # deleted users' data persists this long; keep in line with docs/PRIVACY.md
+          if-no-files-found: error
